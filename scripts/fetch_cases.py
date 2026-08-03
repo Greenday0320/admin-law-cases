@@ -9,6 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = ROOT / "config.local.json"
 DATA_PATH = ROOT / "data" / "cases.json"
+INDEX_PATH = ROOT / "index.html"
 
 LIST_URL = "http://www.law.go.kr/DRF/lawSearch.do"
 DETAIL_URL = "http://www.law.go.kr/DRF/lawService.do"
@@ -63,6 +64,20 @@ def load_existing():
     if DATA_PATH.exists():
         return json.loads(DATA_PATH.read_text(encoding="utf-8"))
     return []
+
+
+def update_index_html(cases):
+    html = INDEX_PATH.read_text(encoding="utf-8")
+    new_json = json.dumps(cases, ensure_ascii=False, indent=2).replace("</script>", "<\\/script>")
+    html, count = re.subn(
+        r'(<script type="application/json" id="cases-data">\n).*?(\n</script>)',
+        lambda m: m.group(1) + new_json + m.group(2),
+        html,
+        flags=re.DOTALL,
+    )
+    if count == 0:
+        raise RuntimeError("index.html에서 cases-data 스크립트 태그를 찾지 못했습니다")
+    INDEX_PATH.write_text(html, encoding="utf-8")
 
 
 def main():
@@ -124,7 +139,8 @@ def main():
         json.dumps(existing, ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-    print(f"완료. 총 {len(existing)}건 저장됨 -> {DATA_PATH}")
+    update_index_html(existing)
+    print(f"완료. 총 {len(existing)}건 저장됨 -> {DATA_PATH}, {INDEX_PATH}")
 
 
 if __name__ == "__main__":
