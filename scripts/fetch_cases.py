@@ -82,6 +82,8 @@ def main():
         for item in items:
             if "행정" not in item.get("사건종류명", ""):
                 continue
+            if "두" not in item.get("사건번호", ""):
+                continue
             if item["판례일련번호"] in seen_ids:
                 continue
             candidates.append(item)
