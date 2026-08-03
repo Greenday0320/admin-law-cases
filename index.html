@@ -64,12 +64,16 @@ a:hover { text-decoration: underline; }
 .site-notice {
   background: var(--accent-soft);
   border-radius: 12px;
-  padding: 14px 18px;
+  padding: 16px 18px;
   margin: 20px 0 32px;
-  font-size: 13.5px;
+  font-size: 14px;
+  line-height: 1.6;
   color: var(--fg);
 }
+.site-notice p { margin: 6px 0; }
 .site-notice strong { color: var(--accent); }
+.site-notice-updated { color: var(--muted); font-size: 12.5px; }
+.site-notice-signature { text-align: right; color: var(--muted); font-size: 12.5px; margin-top: 10px !important; }
 
 .doc-card-list {
   display: flex;
@@ -149,7 +153,13 @@ a:hover { text-decoration: underline; }
     <p class="site-subtitle">국가법령정보센터 Open API로 수집한 대법원 행정 판례 아카이브</p>
   </header>
 
-  <div class="site-notice" id="notice"></div>
+  <div class="site-notice">
+    <p><strong>📌 안내</strong></p>
+    <p>이 목록은 국가법령정보센터 Open API를 통해 <strong>주기적으로 업데이트</strong>됩니다. 업데이트되면 이 페이지에 <strong>자동으로 최신 판례가 반영</strong>되므로, 새 링크를 받을 필요 없이 지금 이 주소를 그대로 저장해두고 보시면 됩니다.</p>
+    <p class="site-notice-updated">최근 업데이트: 2026-08-03</p>
+    <p id="notice-count"></p>
+    <p class="site-notice-signature">(제작 by NSG)</p>
+  </div>
 
   <div class="doc-card-list" id="list"></div>
 </div>
@@ -158,7 +168,7 @@ a:hover { text-decoration: underline; }
   fetch('data/cases.json')
     .then(res => res.json())
     .then(cases => {
-      document.getElementById('notice').innerHTML = `<strong>총 ${cases.length}건</strong> · 2026년 대법원 행정 판례부터 수집 중`;
+      document.getElementById('notice-count').innerHTML = `<strong>총 ${cases.length}건</strong> · 2026년 대법원 행정 판례부터 수집 중`;
       const list = document.getElementById('list');
       cases.forEach((c, i) => {
         const div = document.createElement('div');
