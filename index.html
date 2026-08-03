@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대법원 행정법 판례 모음</title>
+<style>
+  body {
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px 16px 80px;
+    line-height: 1.6;
+    color: #222;
+    background: #fafafa;
+  }
+  h1 {
+    font-size: 1.4rem;
+    margin-bottom: 4px;
+  }
+  .count {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  .case {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .case-header {
+    padding: 14px 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .case-header:hover {
+    background: #f2f2f2;
+  }
+  .case-title {
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .case-meta {
+    color: #666;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+  .case-body {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid #eee;
+  }
+  .case-body.open {
+    display: block;
+  }
+  .field {
+    margin-top: 14px;
+  }
+  .field h4 {
+    margin: 0 0 4px;
+    font-size: 0.9rem;
+    color: #0a5;
+  }
+  .field p {
+    margin: 0;
+    white-space: pre-wrap;
+    font-size: 0.92rem;
+  }
+  .full-text {
+    max-height: 320px;
+    overflow-y: auto;
+    background: #f7f7f7;
+    padding: 10px;
+    border-radius: 6px;
+  }
+</style>
+</head>
+<body>
+  <h1>대법원 행정법 판례 모음</h1>
+  <div class="count" id="count"></div>
+  <div id="list"></div>
+
+  <script>
+    fetch('data/cases.json')
+      .then(res => res.json())
+      .then(cases => {
+        document.getElementById('count').textContent = `총 ${cases.length}건`;
+        const list = document.getElementById('list');
+        cases.forEach((c, i) => {
+          const div = document.createElement('div');
+          div.className = 'case';
+          const date = c.선고일자 ? `${c.선고일자.slice(0,4)}.${c.선고일자.slice(4,6)}.${c.선고일자.slice(6,8)}` : '';
+          div.innerHTML = `
+            <div class="case-header" data-idx="${i}">
+              <span class="case-title">${c.사건명}</span>
+              <span class="case-meta">${c.사건번호} · ${date}</span>
+            </div>
+            <div class="case-body" id="body-${i}">
+              ${field('판시사항', c.판시사항)}
+              ${field('판결요지', c.판결요지)}
+              ${field('참조조문', c.참조조문)}
+              ${field('참조판례', c.참조판례)}
+              ${field('전문', c.판례내용, true)}
+            </div>
+          `;
+          list.appendChild(div);
+        });
+
+        list.addEventListener('click', (e) => {
+          const header = e.target.closest('.case-header');
+          if (!header) return;
+          const body = document.getElementById(`body-${header.dataset.idx}`);
+          body.classList.toggle('open');
+        });
+      });
+
+    function field(label, text, isFullText) {
+      if (!text) return '';
+      return `
+        <div class="field">
+          <h4>${label}</h4>
+          <p class="${isFullText ? 'full-text' : ''}">${escapeHtml(text)}</p>
+        </div>
+      `;
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+  </script>
+</body>
+</html>
