@@ -57,7 +57,7 @@ git push   # push하면 GitHub Pages 자동 재배포
 
 - **git 로컬 identity**: 이 저장소에만 `user.email`/`user.name` 로컬 설정되어 있음 (전역 설정 아님)
 - **브라우저 캐시**: GitHub Pages가 `Cache-Control: max-age=600`이라, 배포 직후 안 바뀐 것처럼 보이면 Ctrl+Shift+R로 강력 새로고침
-- **로컬 미리보기**: `index.html`이 `fetch()`로 JSON을 읽어오는 구조라 `file://`로 직접 열면 CORS로 안 됨. `python -m http.server` 같은 로컬 서버로 띄워서 확인해야 함
+- **로컬 미리보기**: `index.html`에 판례 데이터가 직접 임베드되어 있어서(fetch 안 씀), 폴더에서 더블클릭해서 `file://`로 열어도 정상 작동함. `scripts/fetch_cases.py`를 실행할 때마다 `data/cases.json`을 갱신하고, 그 내용을 `index.html` 안의 `<script id="cases-data">` 블록에도 자동으로 다시 채워 넣음
 
 ## 다음에 할 수 있는 것
 
