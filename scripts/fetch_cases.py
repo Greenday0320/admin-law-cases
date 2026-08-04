@@ -1,3 +1,4 @@
+import argparse
 import json
 import re
 import time
@@ -28,15 +29,14 @@ def fetch_json(url, params):
         return json.loads(resp.read().decode("utf-8"))
 
 
-def fetch_list_page(oc, page):
-    end_date = date.today().strftime("%Y%m%d")
+def fetch_list_page(oc, page, start_date, end_date):
     return fetch_json(LIST_URL, {
         "OC": oc,
         "target": "prec",
         "type": "JSON",
         "org": "400201",
         "datSrcNm": "대법원",
-        "prncYd": f"{START_DATE}~{end_date}",
+        "prncYd": f"{start_date}~{end_date}",
         "sort": "ddes",
         "display": 100,
         "page": page,
@@ -81,6 +81,11 @@ def update_index_html(cases):
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--start", default=START_DATE, help="수집 시작일 YYYYMMDD (기본: %(default)s)")
+    parser.add_argument("--end", default=date.today().strftime("%Y%m%d"), help="수집 종료일 YYYYMMDD (기본: 오늘)")
+    args = parser.parse_args()
+
     oc = load_oc()
     existing = load_existing()
     seen_ids = {c["판례일련번호"] for c in existing}
@@ -88,7 +93,7 @@ def main():
     candidates = []
     page = 1
     while True:
-        result = fetch_list_page(oc, page)
+        result = fetch_list_page(oc, page, args.start, args.end)
         search = result.get("PrecSearch", {})
         items = search.get("prec", [])
         if not items:

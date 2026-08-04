@@ -23,7 +23,7 @@ admin-law-cases/
 **목록 조회**: `http://www.law.go.kr/DRF/lawSearch.do?target=prec&type=JSON`
 - `org=400201` — 법원종류: 대법원
 - `datSrcNm=대법원` — **반드시 필요**. 이게 없으면 국세법령정보시스템 등 미러링된 데이터가 섞여 들어오고, 그 판례일련번호로는 본문 조회가 실패함
-- `prncYd=20260101~{오늘}` — 2026년 이후 선고 판례만
+- `prncYd={시작일}~{종료일}` — 기본값은 `20260101~{오늘}` (2026년 이후 선고 판례). `fetch_cases.py --start YYYYMMDD --end YYYYMMDD`로 과거 구간을 지정해 소급 수집 가능 (2025년 하반기 판례를 이 방식으로 추가함)
 - `sort=ddes` — 최신순
 - `display=100&page=N` — 페이지네이션
 
